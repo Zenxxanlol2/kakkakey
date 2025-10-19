@@ -1,0 +1,364 @@
+-- GUI Library with Realistic Tab System
+local GuiLibrary = {}
+
+-- Main container
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "NamelessPourGUI"
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+-- Main frame
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 450, 0, 350)
+MainFrame.Position = UDim2.new(0.5, -225, 0.5, -175)
+MainFrame.BackgroundColor3 = Color3.new(0.05, 0.05, 0.05)
+MainFrame.BorderSizePixel = 0
+MainFrame.Parent = ScreenGui
+
+-- Corner rounding
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 8)
+MainCorner.Parent = MainFrame
+
+-- Header
+local Header = Instance.new("Frame")
+Header.Name = "Header"
+Header.Size = UDim2.new(1, 0, 0, 40)
+Header.BackgroundColor3 = Color3.new(0.08, 0.08, 0.08)
+Header.BorderSizePixel = 0
+Header.Parent = MainFrame
+
+local HeaderCorner = Instance.new("UICorner")
+HeaderCorner.CornerRadius = UDim.new(0, 8)
+HeaderCorner.Parent = Header
+
+-- Title
+local Title = Instance.new("TextLabel")
+Title.Name = "Title"
+Title.Size = UDim2.new(0, 200, 1, 0)
+Title.Position = UDim2.new(0, 15, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "NAMELESS POUR"
+Title.TextColor3 = Color3.new(1, 1, 1)
+Title.TextSize = 18
+Title.Font = Enum.Font.GothamBold
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = Header
+
+-- Subtitle
+local Subtitle = Instance.new("TextLabel")
+Subtitle.Name = "Subtitle"
+Subtitle.Size = UDim2.new(0, 200, 0, 15)
+Subtitle.Position = UDim2.new(0, 15, 0, 25)
+Subtitle.BackgroundTransparency = 1
+Subtitle.Text = "sublique"
+Subtitle.TextColor3 = Color3.new(0.7, 0.7, 0.7)
+Subtitle.TextSize = 11
+Subtitle.Font = Enum.Font.Gotham
+Subtitle.TextXAlignment = Enum.TextXAlignment.Left
+Subtitle.Parent = Header
+
+-- Close button
+local CloseButton = Instance.new("TextButton")
+CloseButton.Name = "CloseButton"
+CloseButton.Size = UDim2.new(0, 30, 0, 30)
+CloseButton.Position = UDim2.new(1, -35, 0.5, -15)
+CloseButton.BackgroundColor3 = Color3.new(0.12, 0.12, 0.12)
+CloseButton.BorderSizePixel = 0
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.new(1, 1, 1)
+CloseButton.TextSize = 14
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.Parent = Header
+
+local CloseCorner = Instance.new("UICorner")
+CloseCorner.CornerRadius = UDim.new(0, 6)
+CloseCorner.Parent = CloseButton
+
+-- Tab container
+local TabContainer = Instance.new("Frame")
+TabContainer.Name = "TabContainer"
+TabContainer.Size = UDim2.new(1, -20, 0, 35)
+TabContainer.Position = UDim2.new(0, 10, 0, 50)
+TabContainer.BackgroundTransparency = 1
+TabContainer.Parent = MainFrame
+
+-- Content container
+local ContentContainer = Instance.new("Frame")
+ContentContainer.Name = "ContentContainer"
+ContentContainer.Size = UDim2.new(1, -20, 1, -100)
+ContentContainer.Position = UDim2.new(0, 10, 0, 90)
+ContentContainer.BackgroundColor3 = Color3.new(0.07, 0.07, 0.07)
+ContentContainer.BorderSizePixel = 0
+ContentContainer.Parent = MainFrame
+
+local ContentCorner = Instance.new("UICorner")
+ContentCorner.CornerRadius = UDim.new(0, 6)
+ContentCorner.Parent = ContentContainer
+
+-- Neon effects
+local NeonGlow = Instance.new("UIStroke")
+NeonGlow.Name = "NeonGlow"
+NeonGlow.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+NeonGlow.Color = Color3.new(0.2, 0.6, 1)
+NeonGlow.Thickness = 2
+NeonGlow.Transparency = 0.3
+NeonGlow.Parent = MainFrame
+
+local HeaderGlow = Instance.new("UIStroke")
+HeaderGlow.Name = "HeaderGlow"
+HeaderGlow.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+HeaderGlow.Color = Color3.new(0.2, 0.6, 1)
+HeaderGlow.Thickness = 1.5
+HeaderGlow.Transparency = 0.4
+HeaderGlow.Parent = Header
+
+-- Variables
+GuiLibrary.Tabs = {}
+GuiLibrary.CurrentTab = nil
+
+-- Close button functionality
+CloseButton.MouseButton1Click:Connect(function()
+    ScreenGui.Enabled = not ScreenGui.Enabled
+end)
+
+-- Make draggable
+local UserInputService = game:GetService("UserInputService")
+local dragging
+local dragInput
+local dragStart
+local startPos
+
+local function update(input)
+    local delta = input.Position - dragStart
+    MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+Header.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = MainFrame.Position
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+Header.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        update(input)
+    end
+end)
+
+-- Tab creation function
+function GuiLibrary:CreateTab(tabName)
+    local Tab = {}
+    
+    -- Tab button
+    local TabButton = Instance.new("TextButton")
+    TabButton.Name = tabName .. "Tab"
+    TabButton.Size = UDim2.new(0, 100, 1, 0)
+    TabButton.Position = UDim2.new(0, (#self.Tabs * 105), 0, 0)
+    TabButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+    TabButton.BorderSizePixel = 0
+    TabButton.Text = tabName
+    TabButton.TextColor3 = Color3.new(0.7, 0.7, 0.7)
+    TabButton.TextSize = 13
+    TabButton.Font = Enum.Font.Gotham
+    TabButton.Parent = TabContainer
+    
+    local TabCorner = Instance.new("UICorner")
+    TabCorner.CornerRadius = UDim.new(0, 6)
+    TabCorner.Parent = TabButton
+    
+    -- Tab content frame
+    local TabFrame = Instance.new("Frame")
+    TabFrame.Name = tabName .. "Content"
+    TabFrame.Size = UDim2.new(1, -20, 1, -20)
+    TabFrame.Position = UDim2.new(0, 10, 0, 10)
+    TabFrame.BackgroundTransparency = 1
+    TabFrame.Visible = false
+    TabFrame.Parent = ContentContainer
+    
+    local TabLayout = Instance.new("UIListLayout")
+    TabLayout.Name = "Layout"
+    TabLayout.Padding = UDim.new(0, 5)
+    TabLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    TabLayout.Parent = TabFrame
+    
+    -- Tab button functionality
+    TabButton.MouseButton1Click:Connect(function()
+        self:SwitchTab(tabName)
+    end)
+    
+    -- Make first tab active by default
+    if #self.Tabs == 0 then
+        self:SwitchTab(tabName)
+    end
+    
+    -- Tab methods
+    function Tab:CreateButton(buttonName, callback)
+        local Button = Instance.new("TextButton")
+        Button.Name = buttonName
+        Button.Size = UDim2.new(1, 0, 0, 35)
+        Button.BackgroundColor3 = Color3.new(0.12, 0.12, 0.12)
+        Button.BorderSizePixel = 0
+        Button.Text = buttonName
+        Button.TextColor3 = Color3.new(1, 1, 1)
+        Button.TextSize = 14
+        Button.Font = Enum.Font.Gotham
+        Button.LayoutOrder = #TabFrame:GetChildren()
+        Button.Parent = TabFrame
+        
+        local ButtonCorner = Instance.new("UICorner")
+        ButtonCorner.CornerRadius = UDim.new(0, 6)
+        ButtonCorner.Parent = Button
+        
+        local ButtonGlow = Instance.new("UIStroke")
+        ButtonGlow.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        ButtonGlow.Color = Color3.new(0.3, 0.7, 1)
+        ButtonGlow.Thickness = 1
+        ButtonGlow.Transparency = 0.7
+        ButtonGlow.Parent = Button
+        
+        -- Hover effects
+        Button.MouseEnter:Connect(function()
+            game:GetService("TweenService"):Create(Button, TweenInfo.new(0.2), {BackgroundColor3 = Color3.new(0.15, 0.15, 0.15)}):Play()
+        end)
+        
+        Button.MouseLeave:Connect(function()
+            game:GetService("TweenService"):Create(Button, TweenInfo.new(0.2), {BackgroundColor3 = Color3.new(0.12, 0.12, 0.12)}):Play()
+        end)
+        
+        Button.MouseButton1Click:Connect(function()
+            if callback then
+                callback()
+            end
+        end)
+        
+        return Button
+    end
+    
+    function Tab:CreateToggle(toggleName, default, callback)
+        local ToggleFrame = Instance.new("Frame")
+        ToggleFrame.Name = toggleName
+        ToggleFrame.Size = UDim2.new(1, 0, 0, 35)
+        ToggleFrame.BackgroundTransparency = 1
+        ToggleFrame.LayoutOrder = #TabFrame:GetChildren()
+        ToggleFrame.Parent = TabFrame
+        
+        local ToggleLabel = Instance.new("TextLabel")
+        ToggleLabel.Name = "Label"
+        ToggleLabel.Size = UDim2.new(0.7, 0, 1, 0)
+        ToggleLabel.BackgroundTransparency = 1
+        ToggleLabel.Text = toggleName
+        ToggleLabel.TextColor3 = Color3.new(1, 1, 1)
+        ToggleLabel.TextSize = 14
+        ToggleLabel.Font = Enum.Font.Gotham
+        ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
+        ToggleLabel.Parent = ToggleFrame
+        
+        local ToggleButton = Instance.new("TextButton")
+        ToggleButton.Name = "Toggle"
+        ToggleButton.Size = UDim2.new(0, 50, 0, 25)
+        ToggleButton.Position = UDim2.new(1, -55, 0.5, -12.5)
+        ToggleButton.BackgroundColor3 = default and Color3.new(0.2, 0.6, 1) or Color3.new(0.3, 0.3, 0.3)
+        ToggleButton.BorderSizePixel = 0
+        ToggleButton.Text = ""
+        ToggleButton.Parent = ToggleFrame
+        
+        local ToggleCorner = Instance.new("UICorner")
+        ToggleCorner.CornerRadius = UDim.new(0, 12)
+        ToggleCorner.Parent = ToggleButton
+        
+        local ToggleState = default or false
+        
+        local function updateToggle()
+            ToggleButton.BackgroundColor3 = ToggleState and Color3.new(0.2, 0.6, 1) or Color3.new(0.3, 0.3, 0.3)
+            if callback then
+                callback(ToggleState)
+            end
+        end
+        
+        ToggleButton.MouseButton1Click:Connect(function()
+            ToggleState = not ToggleState
+            updateToggle()
+        end)
+        
+        updateToggle()
+        
+        return {
+            Set = function(self, value)
+                ToggleState = value
+                updateToggle()
+            end,
+            Get = function(self)
+                return ToggleState
+            end
+        }
+    end
+    
+    function Tab:CreateLabel(labelText)
+        local Label = Instance.new("TextLabel")
+        Label.Name = "Label"
+        Label.Size = UDim2.new(1, 0, 0, 25)
+        Label.BackgroundTransparency = 1
+        Label.Text = labelText
+        Label.TextColor3 = Color3.new(0.8, 0.8, 0.8)
+        Label.TextSize = 13
+        Label.Font = Enum.Font.Gotham
+        Label.TextXAlignment = Enum.TextXAlignment.Left
+        Label.LayoutOrder = #TabFrame:GetChildren()
+        Label.Parent = TabFrame
+        
+        return Label
+    end
+    
+    table.insert(self.Tabs, Tab)
+    return Tab
+end
+
+-- Tab switching function
+function GuiLibrary:SwitchTab(tabName)
+    -- Hide all tab contents
+    for _, tab in pairs(self.Tabs) do
+        local tabFrame = ContentContainer:FindFirstChild(tab.Name .. "Content")
+        if tabFrame then
+            tabFrame.Visible = false
+        end
+    end
+    
+    -- Show selected tab content
+    local selectedFrame = ContentContainer:FindFirstChild(tabName .. "Content")
+    if selectedFrame then
+        selectedFrame.Visible = true
+    end
+    
+    -- Update tab button appearances
+    for _, child in pairs(TabContainer:GetChildren()) do
+        if child:IsA("TextButton") then
+            if child.Text == tabName then
+                child.BackgroundColor3 = Color3.new(0.2, 0.5, 0.9)
+                child.TextColor3 = Color3.new(1, 1, 1)
+            else
+                child.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+                child.TextColor3 = Color3.new(0.7, 0.7, 0.7)
+            end
+        end
+    end
+    
+    self.CurrentTab = tabName
+end
+
+return GuiLibrary
