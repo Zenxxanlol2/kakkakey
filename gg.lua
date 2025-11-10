@@ -713,6 +713,8 @@ UserInputService.InputChanged:Connect(function(input)
         updateToggle(input)
     end
 end
+        
+loadKeybinds()
 
 return {
     createButton = createButton,
@@ -721,5 +723,3 @@ return {
         return buttonStates[text] or false
     end
 }
-        
-loadKeybinds()
