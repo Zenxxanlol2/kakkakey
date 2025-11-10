@@ -258,7 +258,7 @@ local function updateKeybind(buttonName, newKey)
     end
 end
 
-local function createButton(parent, text, position, size, callback, defaultKey)
+createButton = function(parent, text, position, size, callback, defaultKey)
     local buttonContainer = Instance.new('Frame')
     buttonContainer.Size = UDim2.new(1, 0, 0, size.Y.Offset)
     buttonContainer.Position = position
