@@ -714,4 +714,12 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end
 
+return {
+    createButton = createButton,
+    contentContainer = contentContainer,
+    getButtonState = function(text)
+        return buttonStates[text] or false
+    end
+}
+        
 loadKeybinds()
