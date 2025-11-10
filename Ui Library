@@ -1,629 +1,348 @@
-local NamelessGui = {}
-local TweenService = game:GetService('TweenService')
-local RunService = game:GetService('RunService')
+local Players = game:GetService('Players')
 local UserInputService = game:GetService('UserInputService')
-local HttpService = game:GetService('HttpService')
+local TweenService = game:GetService('TweenService')
 
-local ScreenGui = Instance.new('ScreenGui')
-ScreenGui.Name = 'SyllinseHubGUI'
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild('PlayerGui')
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild('PlayerGui')
 
-local MainFrame = Instance.new('Frame')
-MainFrame.Name = 'MainFrame'
-MainFrame.Size = UDim2.new(0, 420, 0, 350)
-MainFrame.Position = UDim2.new(0.5, -210, 0.5, -175)
-MainFrame.BackgroundColor3 = Color3.new(0.05, 0.05, 0.08)
-MainFrame.BorderSizePixel = 0
-MainFrame.Parent = ScreenGui
+local screenGui = Instance.new('ScreenGui')
+screenGui.Name = 'ShadowStealHelper'
+screenGui.Parent = playerGui
+screenGui.ResetOnSpawn = false
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-local MainCorner = Instance.new('UICorner')
-MainCorner.CornerRadius = UDim.new(0, 12)
-MainCorner.Parent = MainFrame
+local toggleCircle = Instance.new('ImageButton')
+toggleCircle.Name = 'ToggleCircle'
+toggleCircle.Size = UDim2.new(0, 50, 0, 50)
+toggleCircle.Position = UDim2.new(0, 20, 0, 20)
 
-local BackgroundPattern = Instance.new('ImageLabel')
-BackgroundPattern.Name = 'BackgroundPattern'
-BackgroundPattern.Size = UDim2.new(1, 0, 1, 0)
-BackgroundPattern.BackgroundTransparency = 1
-BackgroundPattern.Image = 'rbxassetid://11543912338'
-BackgroundPattern.ImageColor3 = Color3.new(0, 0.2, 0.4)
-BackgroundPattern.ImageTransparency = 0.97
-BackgroundPattern.ScaleType = Enum.ScaleType.Tile
-BackgroundPattern.TileSize = UDim2.new(0, 60, 0, 60)
-BackgroundPattern.Parent = MainFrame
+toggleCircle.Image = 'rbxassetid://109884256700214'
+toggleCircle.ImageColor3 = Color3.fromRGB(255, 255, 255)
+toggleCircle.Parent = screenGui
 
-local Header = Instance.new('Frame')
-Header.Name = 'Header'
-Header.Size = UDim2.new(1, 0, 0, 40)
-Header.BackgroundColor3 = Color3.new(0.08, 0.08, 0.12)
-Header.BorderSizePixel = 0
-Header.Parent = MainFrame
+local toggleCorner = Instance.new('UICorner')
+toggleCorner.CornerRadius = UDim.new(1, 0)
+toggleCorner.Parent = toggleCircle
 
-local HeaderCorner = Instance.new('UICorner')
-HeaderCorner.CornerRadius = UDim.new(0, 12)
-HeaderCorner.Parent = Header
+local toggleShadow = Instance.new('ImageLabel')
+toggleShadow.Name = 'ToggleShadow'
+toggleShadow.Size = UDim2.new(1, 20, 1, 20)
+toggleShadow.Position = UDim2.new(0, -10, 0, -10)
+toggleShadow.BackgroundTransparency = 1
+toggleShadow.Image = 'rbxassetid://5554236805'
+toggleShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+toggleShadow.ImageTransparency = 0.8
+toggleShadow.ScaleType = Enum.ScaleType.Slice
+toggleShadow.SliceCenter = Rect.new(23, 23, 277, 277)
+toggleShadow.ZIndex = -1
+toggleShadow.Parent = toggleCircle
 
-local Title = Instance.new('TextLabel')
-Title.Name = 'Title'
-Title.Size = UDim2.new(1, -100, 1, 0)
-Title.Position = UDim2.new(0, 15, 0, 0)
-Title.BackgroundTransparency = 1
-Title.Text = 'SYLLINSE HUB'
-Title.TextColor3 = Color3.new(0, 0.8, 1)
-Title.TextSize = 18
-Title.Font = Enum.Font.GothamBlack
-Title.TextXAlignment = Enum.TextXAlignment.Left
-Title.Parent = Header
+local toggleOutline = Instance.new('UIStroke')
+toggleOutline.Color = Color3.fromRGB(0, 100, 200)
+toggleOutline.Thickness = 2
+toggleOutline.Parent = toggleCircle
 
-local VersionLabel = Instance.new('TextLabel')
-VersionLabel.Name = 'Version'
-VersionLabel.Size = UDim2.new(0, 100, 0, 12)
-VersionLabel.Position = UDim2.new(0, 15, 0, 22)
-VersionLabel.BackgroundTransparency = 1
-VersionLabel.Text = 'v2.0.1'
-VersionLabel.TextColor3 = Color3.new(0.4, 0.7, 1)
-VersionLabel.TextSize = 10
-VersionLabel.Font = Enum.Font.Gotham
-VersionLabel.TextXAlignment = Enum.TextXAlignment.Left
-VersionLabel.Parent = Header
+local toggleGradient = Instance.new('UIGradient')
+toggleGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)),
+})
+toggleGradient.Rotation = 90
+toggleGradient.Parent = toggleCircle
 
-local CloseButton = Instance.new('TextButton')
-CloseButton.Name = 'CloseButton'
-CloseButton.Size = UDim2.new(0, 28, 0, 28)
-CloseButton.Position = UDim2.new(1, -32, 0.5, -14)
-CloseButton.BackgroundColor3 = Color3.new(0.12, 0.12, 0.18)
-CloseButton.BorderSizePixel = 0
-CloseButton.Text = '×'
-CloseButton.TextColor3 = Color3.new(1, 1, 1)
-CloseButton.TextSize = 18
-CloseButton.Font = Enum.Font.GothamBold
-CloseButton.Parent = Header
+local toggleShadow = Instance.new('ImageLabel')
+toggleShadow.Name = 'ToggleShadow'
+toggleShadow.Size = UDim2.new(1, 20, 1, 20)
+toggleShadow.Position = UDim2.new(0, -10, 0, -10)
+toggleShadow.BackgroundTransparency = 1
+toggleShadow.Image = 'rbxassetid://5554236805'
+toggleShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+toggleShadow.ImageTransparency = 0.8
+toggleShadow.ScaleType = Enum.ScaleType.Slice
+toggleShadow.SliceCenter = Rect.new(23, 23, 277, 277)
+toggleShadow.ZIndex = -1
+toggleShadow.Parent = toggleCircle
 
-local CloseCorner = Instance.new('UICorner')
-CloseCorner.CornerRadius = UDim.new(0, 8)
-CloseCorner.Parent = CloseButton
+local toggleOutline = Instance.new('UIStroke')
+toggleOutline.Color = Color3.fromRGB(0, 100, 200)
+toggleOutline.Thickness = 2
+toggleOutline.Parent = toggleCircle
 
-local MinimizeButton = Instance.new('TextButton')
-MinimizeButton.Name = 'MinimizeButton'
-MinimizeButton.Size = UDim2.new(0, 28, 0, 28)
-MinimizeButton.Position = UDim2.new(1, -65, 0.5, -14)
-MinimizeButton.BackgroundColor3 = Color3.new(0.12, 0.12, 0.18)
-MinimizeButton.BorderSizePixel = 0
-MinimizeButton.Text = '–'
-MinimizeButton.TextColor3 = Color3.new(1, 1, 1)
-MinimizeButton.TextSize = 16
-MinimizeButton.Font = Enum.Font.GothamBold
-MinimizeButton.Parent = Header
+local toggleGradient = Instance.new('UIGradient')
+toggleGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 170, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 100, 200)),
+})
+toggleGradient.Rotation = 90
+toggleGradient.Parent = toggleCircle
 
-local MinimizeCorner = Instance.new('UICorner')
-MinimizeCorner.CornerRadius = UDim.new(0, 8)
-MinimizeCorner.Parent = MinimizeButton
+local mainFrame = Instance.new('Frame')
+mainFrame.Size = UDim2.new(0, 220, 0, 280)
+mainFrame.Position = UDim2.new(0.9, -200, 0, 150)
+mainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Visible = false
 
-local MainContent = Instance.new('Frame')
-MainContent.Name = 'MainContent'
-MainContent.Size = UDim2.new(1, 0, 1, -40)
-MainContent.Position = UDim2.new(0, 0, 0, 40)
-MainContent.BackgroundTransparency = 1
-MainContent.Parent = MainFrame
+local shadow = Instance.new('ImageLabel')
+shadow.Name = 'SYLLINSE'
+shadow.Size = UDim2.new(1, 20, 1, 20)
+shadow.Position = UDim2.new(0, -10, 0, -10)
+shadow.BackgroundTransparency = 1
+shadow.Image = 'rbxassetid://5554236805'
+shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+shadow.ImageTransparency = 0.8
+shadow.ScaleType = Enum.ScaleType.Slice
+shadow.SliceCenter = Rect.new(23, 23, 277, 277)
+shadow.ZIndex = -1
+shadow.Parent = mainFrame
 
-local TabContainer = Instance.new('ScrollingFrame')
-TabContainer.Name = 'TabContainer'
-TabContainer.Size = UDim2.new(0, 90, 1, -10)
-TabContainer.Position = UDim2.new(0, 8, 0, 8)
-TabContainer.BackgroundColor3 = Color3.new(0.08, 0.08, 0.12)
-TabContainer.BorderSizePixel = 0
-TabContainer.ScrollBarThickness = 3
-TabContainer.ScrollBarImageColor3 = Color3.new(0, 0.8, 1)
-TabContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
-TabContainer.Parent = MainContent
+local gradient = Instance.new('UIGradient')
+gradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(25, 25, 35)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 10, 15)),
+})
+gradient.Rotation = 90
+gradient.Parent = mainFrame
 
-local TabContainerCorner = Instance.new('UICorner')
-TabContainerCorner.CornerRadius = UDim.new(0, 8)
-TabContainerCorner.Parent = TabContainer
+local outline = Instance.new('UIStroke')
+outline.Color = Color3.fromRGB(60, 60, 80)
+outline.Thickness = 2
+outline.Parent = mainFrame
 
-local TabListLayout = Instance.new('UIListLayout')
-TabListLayout.Padding = UDim.new(0, 6)
-TabListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-TabListLayout.Parent = TabContainer
+local header = Instance.new('Frame')
+header.Size = UDim2.new(1, 0, 0, 40)
+header.Position = UDim2.new(0, 0, 0, 0)
+header.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+header.BackgroundTransparency = 0.7
+header.BorderSizePixel = 0
+header.Parent = mainFrame
 
-local ContentContainer = Instance.new('Frame')
-ContentContainer.Name = 'ContentContainer'
-ContentContainer.Size = UDim2.new(1, -105, 1, -10)
-ContentContainer.Position = UDim2.new(0, 100, 0, 8)
-ContentContainer.BackgroundColor3 = Color3.new(0.08, 0.08, 0.12)
-ContentContainer.BorderSizePixel = 0
-ContentContainer.Parent = MainContent
+local headerGradient = Instance.new('UIGradient')
+headerGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 20, 30)),
+})
+headerGradient.Rotation = 90
+headerGradient.Parent = header
 
-local ContentCorner = Instance.new('UICorner')
-ContentCorner.CornerRadius = UDim.new(0, 8)
-ContentCorner.Parent = ContentContainer
+local accent = Instance.new('Frame')
+accent.Size = UDim2.new(1, 0, 0, 2)
+accent.Position = UDim2.new(0, 0, 1, -2)
+accent.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+accent.BorderSizePixel = 0
+accent.Parent = header
 
-local ContentScroll = Instance.new('ScrollingFrame')
-ContentScroll.Name = 'ContentScroll'
-ContentScroll.Size = UDim2.new(1, -10, 1, -10)
-ContentScroll.Position = UDim2.new(0, 5, 0, 5)
-ContentScroll.BackgroundTransparency = 1
-ContentScroll.ScrollBarThickness = 3
-ContentScroll.ScrollBarImageColor3 = Color3.new(0, 0.8, 1)
-ContentScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-ContentScroll.Parent = ContentContainer
+local titleContainer = Instance.new('Frame')
+titleContainer.Size = UDim2.new(1, -50, 1, 0)
+titleContainer.Position = UDim2.new(0, 10, 0, 0)
+titleContainer.BackgroundTransparency = 1
+titleContainer.Parent = header
 
-local ContentLayout = Instance.new('UIListLayout')
-ContentLayout.Padding = UDim.new(0, 8)
-ContentLayout.SortOrder = Enum.SortOrder.LayoutOrder
-ContentLayout.Parent = ContentScroll
+local title = Instance.new('TextLabel')
+title.Size = UDim2.new(1, 0, 0.6, 0)
+title.Position = UDim2.new(0, 0, 0, 2)
+title.BackgroundTransparency = 1
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Text = 'SYLLINSE'
+title.Font = Enum.Font.GothamBlack
+title.TextSize = 18
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.TextYAlignment = Enum.TextYAlignment.Bottom
+title.Parent = titleContainer
 
-local NeonGlow = Instance.new('UIStroke')
-NeonGlow.Name = 'NeonGlow'
-NeonGlow.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-NeonGlow.Color = Color3.new(0, 0.8, 1)
-NeonGlow.Thickness = 2.5
-NeonGlow.Transparency = 0.1
-NeonGlow.Parent = MainFrame
+local subtitle = Instance.new('TextLabel')
+subtitle.Size = UDim2.new(1, 0, 0.4, 0)
+subtitle.Position = UDim2.new(0, 0, 0.6, 0)
+subtitle.BackgroundTransparency = 1
+subtitle.TextColor3 = Color3.fromRGB(180, 180, 220)
+subtitle.Text = 'STEAL HELPER'
+subtitle.Font = Enum.Font.Gotham
+subtitle.TextSize = 14
+subtitle.TextXAlignment = Enum.TextXAlignment.Left
+subtitle.TextYAlignment = Enum.TextYAlignment.Top
+subtitle.Parent = titleContainer
 
-local HeaderGlow = Instance.new('UIStroke')
-HeaderGlow.Name = 'HeaderGlow'
-HeaderGlow.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-HeaderGlow.Color = Color3.new(0, 0.8, 1)
-HeaderGlow.Thickness = 2
-NeonGlow.Transparency = 0.2
-HeaderGlow.Parent = Header
+local controls = Instance.new('Frame')
+controls.Size = UDim2.new(0, 40, 1, 0)
+controls.Position = UDim2.new(1, -45, 0, 0)
+controls.BackgroundTransparency = 1
+controls.Parent = header
 
-local TabContainerGlow = Instance.new('UIStroke')
-TabContainerGlow.Name = 'TabContainerGlow'
-TabContainerGlow.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-TabContainerGlow.Color = Color3.new(0, 0.8, 1)
-TabContainerGlow.Thickness = 2
-TabContainerGlow.Transparency = 0.3
-TabContainerGlow.Parent = TabContainer
+local minimizeBtn = Instance.new('TextButton')
+minimizeBtn.Size = UDim2.new(0, 16, 0, 16)
+minimizeBtn.Position = UDim2.new(0, 2, 0, 10)
+minimizeBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+minimizeBtn.BorderSizePixel = 0
+minimizeBtn.Text = '−'
+minimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+minimizeBtn.Font = Enum.Font.GothamBold
+minimizeBtn.TextSize = 14
+minimizeBtn.Parent = controls
 
-local ContentGlow = Instance.new('UIStroke')
-ContentGlow.Name = 'ContentGlow'
-ContentGlow.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-ContentGlow.Color = Color3.new(0, 0.8, 1)
-ContentGlow.Thickness = 2
-ContentGlow.Transparency = 0.3
-ContentGlow.Parent = ContentContainer
+local minimizeOutline = Instance.new('UIStroke')
+minimizeOutline.Color = Color3.fromRGB(80, 80, 100)
+minimizeOutline.Thickness = 1
+minimizeOutline.Parent = minimizeBtn
 
-NamelessGui.Tabs = {}
-NamelessGui.CurrentTab = nil
-NamelessGui.Enabled = true
-NamelessGui.ButtonStates = {}
-NamelessGui.KeybindButtons = {}
+local closeBtn = Instance.new('TextButton')
+closeBtn.Size = UDim2.new(0, 16, 0, 16)
+closeBtn.Position = UDim2.new(0, 20, 0, 10)
+closeBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+closeBtn.BorderSizePixel = 0
+closeBtn.Text = '×'
+closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.TextSize = 14
+closeBtn.Parent = controls
 
-local neonTime = 0
-local neonConnections = {}
+local closeOutline = Instance.new('UIStroke')
+closeOutline.Color = Color3.fromRGB(80, 80, 100)
+closeOutline.Thickness = 1
+closeOutline.Parent = closeBtn
+
+local buttonStates = {}
+
+local contentContainer = Instance.new('Frame')
+contentContainer.Size = UDim2.new(1, 0, 1, -40)
+contentContainer.Position = UDim2.new(0, 0, 0, 40)
+contentContainer.BackgroundTransparency = 1
+contentContainer.Parent = mainFrame
+
+local allButtonFrames = {}
+local keybindButtons = {}
+local buttonStates = {}
 
 local function saveKeybinds()
     if not writefile then
         return
     end
+
     local keybindData = {}
-    for buttonName, keybindInfo in pairs(NamelessGui.KeybindButtons) do
+    for buttonName, keybindInfo in pairs(keybindButtons) do
         keybindData[buttonName] = keybindInfo.currentKey
     end
+
     pcall(function()
-        writefile('syllinse_keybinds.json', HttpService:JSONEncode(keybindData))
+        writefile(
+            'syllinse.json',
+            game:GetService('HttpService'):JSONEncode(keybindData)
+        )
     end)
 end
 
 local function loadKeybinds()
-    if not readfile or not isfile or not isfile('syllinse_keybinds.json') then
+    if not readfile or not isfile or not isfile('syllinse.json') then
         return
     end
+
     pcall(function()
-        local data = HttpService:JSONDecode(readfile('syllinse_keybinds.json'))
+        local data = game:GetService('HttpService')
+            :JSONDecode(readfile('syllinse.json'))
         for buttonName, key in pairs(data) do
-            if NamelessGui.KeybindButtons[buttonName] then
-                NamelessGui.KeybindButtons[buttonName].currentKey = key
-                NamelessGui.KeybindButtons[buttonName].keybindButton.Text = key
+            if keybindButtons[buttonName] then
+                keybindButtons[buttonName].currentKey = key
+                keybindButtons[buttonName].button.Text = key
             end
         end
     end)
 end
 
 local function updateKeybind(buttonName, newKey)
-    if NamelessGui.KeybindButtons[buttonName] then
-        NamelessGui.KeybindButtons[buttonName].currentKey = newKey
-        NamelessGui.KeybindButtons[buttonName].keybindButton.Text = newKey
+    if keybindButtons[buttonName] then
+        keybindButtons[buttonName].currentKey = newKey
+        keybindButtons[buttonName].button.Text = newKey
         saveKeybinds()
     end
 end
 
-local function createAnimatedNeonText(parent, text, size, position)
-    local NeonText = Instance.new('TextLabel')
-    NeonText.Name = 'AnimatedNeonText'
-    NeonText.Size = size or UDim2.new(1, -20, 0, 40)
-    NeonText.Position = position or UDim2.new(0, 10, 0, 5)
-    NeonText.BackgroundTransparency = 1
-    NeonText.Text = text
-    NeonText.TextColor3 = Color3.new(0, 0.8, 1)
-    NeonText.TextSize = 16
-    NeonText.Font = Enum.Font.GothamBlack
-    NeonText.TextXAlignment = Enum.TextXAlignment.Center
-    NeonText.TextYAlignment = Enum.TextYAlignment.Center
-    NeonText.Parent = parent
+local function createButton(parent, text, position, size, callback, defaultKey)
+    local buttonContainer = Instance.new('Frame')
+    buttonContainer.Size = UDim2.new(1, 0, 0, size.Y.Offset)
+    buttonContainer.Position = position
+    buttonContainer.BackgroundTransparency = 1
+    buttonContainer.Parent = parent
+    local buttonFrame = Instance.new('Frame')
+    buttonFrame.Size = UDim2.new(0.75, -5, 1, 0)
+    buttonFrame.Position = UDim2.new(0, 0, 0, 0)
+    buttonFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    buttonFrame.BorderSizePixel = 0
+    buttonFrame.Parent = buttonContainer
 
-    local TextGlow = Instance.new('UIStroke')
-    TextGlow.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    TextGlow.Color = Color3.new(0.2, 0.8, 1)
-    TextGlow.Thickness = 2
-    TextGlow.Transparency = 0.3
-    TextGlow.Parent = NeonText
+    local buttonCorner = Instance.new('UICorner')
+    buttonCorner.CornerRadius = UDim.new(0, 4)
+    buttonCorner.Parent = buttonFrame
 
-    table.insert(neonConnections, { text = NeonText, glow = TextGlow })
+    local button = Instance.new('TextButton')
+    button.Size = UDim2.new(1, 0, 1, 0)
+    button.Position = UDim2.new(0, 0, 0, 0)
+    button.BackgroundTransparency = 1
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.Text = text
+    button.Font = Enum.Font.Gotham
+    button.TextSize = 11
+    button.Parent = buttonFrame
 
-    return NeonText
-end
+    local buttonOutline = Instance.new('UIStroke')
+    buttonOutline.Color = Color3.fromRGB(60, 60, 80)
+    buttonOutline.Thickness = 1
+    buttonOutline.Parent = buttonFrame
 
-local function animateNeon()
-    neonTime = neonTime + 0.03
-    local bluePulse = math.sin(neonTime) * 0.2 + 0.8
-    local cyanPulse = math.sin(neonTime + math.pi / 2) * 0.3 + 0.7
+    local buttonGradient = Instance.new('UIGradient')
+    buttonGradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 35, 45)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(25, 25, 35)),
+    })
+    buttonGradient.Rotation = 90
+    buttonGradient.Parent = buttonFrame
+    local keybindFrame = Instance.new('Frame')
+    keybindFrame.Size = UDim2.new(0.18, 0, 1, 0)
+    keybindFrame.Position = UDim2.new(0.75, 5, 0, 0)
+    keybindFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+    keybindFrame.BorderSizePixel = 0
+    keybindFrame.Parent = buttonContainer
 
-    for _, neonObj in pairs(neonConnections) do
-        if neonObj.text and neonObj.text.Parent then
-            neonObj.text.TextColor3 = Color3.new(0, bluePulse, 1)
-            if neonObj.glow then
-                neonObj.glow.Color = Color3.new(0.2, cyanPulse, 1)
-            end
-        end
-    end
+    local keybindCorner = Instance.new('UICorner')
+    keybindCorner.CornerRadius = UDim.new(0, 4)
+    keybindCorner.Parent = keybindFrame
 
-    NeonGlow.Color = Color3.new(0, bluePulse, 1)
-    HeaderGlow.Color = Color3.new(0, bluePulse, 1)
-    TabContainerGlow.Color = Color3.new(0, bluePulse, 1)
-    ContentGlow.Color = Color3.new(0, bluePulse, 1)
-end
+    local keybindButton = Instance.new('TextButton')
+    keybindButton.Size = UDim2.new(1, 0, 1, 0)
+    keybindButton.Position = UDim2.new(0, 0, 0, 0)
+    keybindButton.BackgroundTransparency = 1
+    keybindButton.TextColor3 = Color3.fromRGB(200, 200, 200)
+    keybindButton.Text = defaultKey or 'NONE'
+    keybindButton.Font = Enum.Font.Gotham
+    keybindButton.TextSize = 10
+    keybindButton.Parent = keybindFrame
 
-RunService.Heartbeat:Connect(animateNeon)
+    local keybindOutline = Instance.new('UIStroke')
+    keybindOutline.Color = Color3.fromRGB(70, 70, 90)
+    keybindOutline.Thickness = 1
+    keybindOutline.Parent = keybindFrame
 
-CloseButton.MouseButton1Click:Connect(function()
-    ScreenGui:Destroy()
-    for _, conn in pairs(neonConnections) do
-        if conn.text then
-            conn.text:Destroy()
-        end
-    end
-    neonConnections = {}
-end)
-
-local minimized = false
-MinimizeButton.MouseButton1Click:Connect(function()
-    minimized = not minimized
-    if minimized then
-        TweenService:Create(
-            MainFrame,
-            TweenInfo.new(0.3),
-            { Size = UDim2.new(0, 420, 0, 40) }
-        ):Play()
-        MainContent.Visible = false
-    else
-        TweenService:Create(
-            MainFrame,
-            TweenInfo.new(0.3),
-            { Size = UDim2.new(0, 420, 0, 350) }
-        ):Play()
-        MainContent.Visible = true
-    end
-end)
-
-local dragging = false
-local dragInput, dragStart, startPos
-
-local function update(input)
-    local delta = input.Position - dragStart
-    MainFrame.Position = UDim2.new(
-        startPos.X.Scale,
-        startPos.X.Offset + delta.X,
-        startPos.Y.Scale,
-        startPos.Y.Offset + delta.Y
-    )
-end
-
-Header.InputBegan:Connect(function(input)
-    if
-        input.UserInputType == Enum.UserInputType.MouseButton1
-        or input.UserInputType == Enum.UserInputType.Touch
-    then
-        dragging = true
-        dragStart = input.Position
-        startPos = MainFrame.Position
-
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
-    end
-end)
-
-Header.InputChanged:Connect(function(input)
-    if
-        input.UserInputType == Enum.UserInputType.MouseMovement
-        or input.UserInputType == Enum.UserInputType.Touch
-    then
-        dragInput = input
-    end
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-    if input == dragInput and dragging then
-        update(input)
-    end
-end)
-
-function NamelessGui:CreateTab(tabName, tabIcon)
-    local Tab = {}
-    Tab.Name = tabName
-
-    local TabButton = Instance.new('TextButton')
-    TabButton.Name = tabName .. 'Tab'
-    TabButton.Size = UDim2.new(1, -8, 0, 55)
-    TabButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.15)
-    TabButton.BorderSizePixel = 0
-    TabButton.Text = ''
-    TabButton.LayoutOrder = #self.Tabs
-    TabButton.Parent = TabContainer
-
-    local TabCorner = Instance.new('UICorner')
-    TabCorner.CornerRadius = UDim.new(0, 6)
-    TabCorner.Parent = TabButton
-
-    local TabGlow = Instance.new('UIStroke')
-    TabGlow.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    TabGlow.Color = Color3.new(0.2, 0.5, 0.8)
-    TabGlow.Thickness = 1.5
-    TabGlow.Transparency = 0.7
-    TabGlow.Parent = TabButton
-
-    local TabIconLabel = Instance.new('TextLabel')
-    TabIconLabel.Name = 'Icon'
-    TabIconLabel.Size = UDim2.new(1, 0, 0, 28)
-    TabIconLabel.Position = UDim2.new(0, 0, 0, 3)
-    TabIconLabel.BackgroundTransparency = 1
-    TabIconLabel.Text = tabIcon or '?'
-    TabIconLabel.TextColor3 = Color3.new(0.5, 0.7, 1)
-    TabIconLabel.TextSize = 16
-    TabIconLabel.Font = Enum.Font.GothamBold
-    TabIconLabel.Parent = TabButton
-
-    local TabNameLabel = Instance.new('TextLabel')
-    TabNameLabel.Name = 'Name'
-    TabNameLabel.Size = UDim2.new(1, 0, 0, 18)
-    TabNameLabel.Position = UDim2.new(0, 0, 0, 32)
-    TabNameLabel.BackgroundTransparency = 1
-    TabNameLabel.Text = tabName
-    TabNameLabel.TextColor3 = Color3.new(0.5, 0.7, 1)
-    TabNameLabel.TextSize = 10
-    TabNameLabel.Font = Enum.Font.Gotham
-    TabNameLabel.Parent = TabButton
-
-    local TabFrame = Instance.new('Frame')
-    TabFrame.Name = tabName .. 'Content'
-    TabFrame.Size = UDim2.new(1, 0, 0, 0)
-    TabFrame.BackgroundTransparency = 1
-    TabFrame.Visible = false
-    TabFrame.LayoutOrder = 1
-    TabFrame.Parent = ContentScroll
-
-    local TabFrameLayout = Instance.new('UIListLayout')
-    TabFrameLayout.Padding = UDim.new(0, 8)
-    TabFrameLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    TabFrameLayout.Parent = TabFrame
-
-    TabFrameLayout:GetPropertyChangedSignal('AbsoluteContentSize')
-        :Connect(function()
-            TabFrame.Size =
-                UDim2.new(1, 0, 0, TabFrameLayout.AbsoluteContentSize.Y)
-        end)
-
-    createAnimatedNeonText(
-        TabFrame,
-        'SYLLINSE HUB',
-        UDim2.new(1, -20, 0, 38),
-        UDim2.new(0, 10, 0, 5)
-    )
-
-    TabContainer.CanvasSize =
-        UDim2.new(0, 0, 0, TabListLayout.AbsoluteContentSize.Y)
-
-    TabButton.MouseButton1Click:Connect(function()
-        self:SwitchTab(tabName)
-    end)
-
-    TabButton.MouseEnter:Connect(function()
-        if self.CurrentTab ~= tabName then
-            TweenService:Create(
-                TabButton,
-                TweenInfo.new(0.2),
-                { BackgroundColor3 = Color3.new(0.15, 0.15, 0.22) }
-            ):Play()
-            TweenService:Create(
-                TabIconLabel,
-                TweenInfo.new(0.2),
-                { TextColor3 = Color3.new(0, 0.9, 1) }
-            ):Play()
-            TweenService:Create(
-                TabNameLabel,
-                TweenInfo.new(0.2),
-                { TextColor3 = Color3.new(0, 0.9, 1) }
-            ):Play()
-        end
-    end)
-
-    TabButton.MouseLeave:Connect(function()
-        if self.CurrentTab ~= tabName then
-            TweenService:Create(
-                TabButton,
-                TweenInfo.new(0.2),
-                { BackgroundColor3 = Color3.new(0.1, 0.1, 0.15) }
-            ):Play()
-            TweenService:Create(
-                TabIconLabel,
-                TweenInfo.new(0.2),
-                { TextColor3 = Color3.new(0.5, 0.7, 1) }
-            ):Play()
-            TweenService:Create(
-                TabNameLabel,
-                TweenInfo.new(0.2),
-                { TextColor3 = Color3.new(0.5, 0.7, 1) }
-            ):Play()
-        end
-    end)
-
-    if #self.Tabs == 0 then
-        self:SwitchTab(tabName)
-    end
-
-    table.insert(self.Tabs, Tab)
-    return Tab
-end
-
-function NamelessGui:SwitchTab(tabName)
-    for _, tab in pairs(self.Tabs) do
-        local tabFrame = ContentScroll:FindFirstChild(tab.Name .. 'Content')
-        if tabFrame then
-            tabFrame.Visible = false
-        end
-    end
-
-    local selectedFrame = ContentScroll:FindFirstChild(tabName .. 'Content')
-    if selectedFrame then
-        selectedFrame.Visible = true
-    end
-
-    for _, child in pairs(TabContainer:GetChildren()) do
-        if child:IsA('TextButton') then
-            local icon = child:FindFirstChild('Icon')
-            local nameLabel = child:FindFirstChild('Name')
-
-            if child.Name:match(tabName) then
-                TweenService:Create(
-                    child,
-                    TweenInfo.new(0.3),
-                    { BackgroundColor3 = Color3.new(0, 0.6, 1) }
-                ):Play()
-                if icon then
-                    TweenService:Create(
-                        icon,
-                        TweenInfo.new(0.3),
-                        { TextColor3 = Color3.new(1, 1, 1) }
-                    ):Play()
-                end
-                if nameLabel then
-                    TweenService:Create(
-                        nameLabel,
-                        TweenInfo.new(0.3),
-                        { TextColor3 = Color3.new(1, 1, 1) }
-                    ):Play()
-                end
-            else
-                TweenService
-                    :Create(
-                        child,
-                        TweenInfo.new(0.3),
-                        { BackgroundColor3 = Color3.new(0.1, 0.1, 0.15) }
-                    )
-                    :Play()
-                if icon then
-                    TweenService
-                        :Create(
-                            icon,
-                            TweenInfo.new(0.3),
-                            { TextColor3 = Color3.new(0.5, 0.7, 1) }
-                        )
-                        :Play()
-                end
-                if nameLabel then
-                    TweenService
-                        :Create(
-                            nameLabel,
-                            TweenInfo.new(0.3),
-                            { TextColor3 = Color3.new(0.5, 0.7, 1) }
-                        )
-                        :Play()
-                end
-            end
-        end
-    end
-
-    self.CurrentTab = tabName
-    ContentScroll.CanvasSize =
-        UDim2.new(0, 0, 0, ContentLayout.AbsoluteContentSize.Y)
-end
-
-function NamelessGui:CreateToggle(tab, toggleName, defaultKey, callback)
-    local toggleFrame = ContentScroll:FindFirstChild(tab.Name .. 'Content')
-    if not toggleFrame then
-        return
-    end
-
-    local ToggleContainer = Instance.new('Frame')
-    ToggleContainer.Name = toggleName .. 'Toggle'
-    ToggleContainer.Size = UDim2.new(1, -20, 0, 36)
-    ToggleContainer.BackgroundTransparency = 1
-    ToggleContainer.LayoutOrder = #toggleFrame:GetChildren()
-    ToggleContainer.Parent = toggleFrame
-
-    local ToggleButton = Instance.new('TextButton')
-    ToggleButton.Name = 'Toggle'
-    ToggleButton.Size = UDim2.new(0.7, -8, 1, 0)
-    ToggleButton.Position = UDim2.new(0, 0, 0, 0)
-    ToggleButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.15)
-    ToggleButton.BorderSizePixel = 0
-    ToggleButton.Text = toggleName
-    ToggleButton.TextColor3 = Color3.new(0.8, 0.9, 1)
-    ToggleButton.TextSize = 12
-    ToggleButton.Font = Enum.Font.Gotham
-    ToggleButton.Parent = ToggleContainer
-
-    local ToggleCorner = Instance.new('UICorner')
-    ToggleCorner.CornerRadius = UDim.new(0, 6)
-    ToggleCorner.Parent = ToggleButton
-
-    local ToggleGlow = Instance.new('UIStroke')
-    ToggleGlow.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    ToggleGlow.Color = Color3.new(0.2, 0.5, 0.8)
-    ToggleGlow.Thickness = 1.5
-    ToggleGlow.Transparency = 0.7
-    ToggleGlow.Parent = ToggleButton
-
-    local KeybindButton = Instance.new('TextButton')
-    KeybindButton.Name = 'Keybind'
-    KeybindButton.Size = UDim2.new(0.3, 0, 1, 0)
-    KeybindButton.Position = UDim2.new(0.7, 8, 0, 0)
-    KeybindButton.BackgroundColor3 = Color3.new(0.08, 0.08, 0.12)
-    KeybindButton.BorderSizePixel = 0
-    KeybindButton.Text = defaultKey or 'NONE'
-    KeybindButton.TextColor3 = Color3.new(0.6, 0.8, 1)
-    KeybindButton.TextSize = 10
-    KeybindButton.Font = Enum.Font.Gotham
-    KeybindButton.Parent = ToggleContainer
-
-    local KeybindCorner = Instance.new('UICorner')
-    KeybindCorner.CornerRadius = UDim.new(0, 6)
-    KeybindCorner.Parent = KeybindButton
-
-    local KeybindGlow = Instance.new('UIStroke')
-    KeybindGlow.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    KeybindGlow.Color = Color3.new(0.2, 0.5, 0.8)
-    KeybindGlow.Thickness = 1.5
-    KeybindGlow.Transparency = 0.7
-    KeybindGlow.Parent = KeybindButton
-
-    self.ButtonStates[toggleName] = false
-    self.KeybindButtons[toggleName] = {
-        keybindButton = KeybindButton,
+    local keybindGradient = Instance.new('UIGradient')
+    keybindGradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 40, 50)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 30, 40)),
+    })
+    keybindGradient.Rotation = 90
+    keybindGradient.Parent = keybindFrame
+    table.insert(allButtonFrames, buttonContainer)
+    buttonStates[text] = false
+    keybindButtons[text] = {
+        frame = keybindFrame,
+        button = keybindButton,
         currentKey = defaultKey or 'NONE',
         callback = callback,
     }
-
     local listening = false
-    KeybindButton.MouseButton1Click:Connect(function()
+    keybindButton.MouseButton1Click:Connect(function()
         listening = true
-        KeybindButton.Text = '...'
-        KeybindButton.BackgroundColor3 = Color3.new(0.15, 0.15, 0.22)
+        keybindButton.Text = '...'
+        keybindFrame.BackgroundColor3 = Color3.fromRGB(60, 60, 80)
 
         local connection
         connection = UserInputService.InputBegan:Connect(
@@ -634,23 +353,16 @@ function NamelessGui:CreateToggle(tab, toggleName, defaultKey, callback)
 
                 if input.UserInputType == Enum.UserInputType.Keyboard then
                     local key = input.KeyCode.Name
-                    updateKeybind(toggleName, key)
+                    updateKeybind(text, key)
+                    keybindButtons[text].currentKey = key
+                    keybindButton.Text = key
                     listening = false
-                    KeybindButton.BackgroundColor3 =
-                        Color3.new(0.08, 0.08, 0.12)
-                    connection:Disconnect()
-                elseif input.UserInputType == Enum.UserInputType.Touch then
-                    KeybindButton.Text = 'TAP'
-                    updateKeybind(toggleName, 'TAP')
-                    listening = false
-                    KeybindButton.BackgroundColor3 =
-                        Color3.new(0.08, 0.08, 0.12)
+                    keybindFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
                     connection:Disconnect()
                 end
             end
         )
     end)
-
     UserInputService.InputBegan:Connect(function(input, gameProcessed)
         if gameProcessed then
             return
@@ -659,114 +371,374 @@ function NamelessGui:CreateToggle(tab, toggleName, defaultKey, callback)
         if input.UserInputType == Enum.UserInputType.Keyboard then
             local pressedKey = input.KeyCode.Name
             if
-                self.KeybindButtons[toggleName]
-                and self.KeybindButtons[toggleName].currentKey == pressedKey
+                keybindButtons[text]
+                and keybindButtons[text].currentKey == pressedKey
             then
-                self.ButtonStates[toggleName] =
-                    not self.ButtonStates[toggleName]
+                buttonStates[text] = not buttonStates[text]
 
-                local targetColor = self.ButtonStates[toggleName]
-                        and Color3.new(0, 0.6, 1)
-                    or Color3.new(0.1, 0.1, 0.15)
-                local targetGlow = self.ButtonStates[toggleName]
-                        and Color3.new(0, 0.9, 1)
-                    or Color3.new(0.2, 0.5, 0.8)
-
-                TweenService:Create(
-                    ToggleButton,
-                    TweenInfo.new(0.2),
-                    { BackgroundColor3 = targetColor }
-                ):Play()
-                TweenService
-                    :Create(
-                        ToggleGlow,
-                        TweenInfo.new(0.2),
-                        { Color = targetGlow }
-                    )
-                    :Play()
-
+                if buttonStates[text] then
+                    TweenService
+                        :Create(
+                            buttonFrame,
+                            TweenInfo.new(0.2),
+                            { BackgroundColor3 = Color3.fromRGB(0, 100, 200) }
+                        )
+                        :Play()
+                    TweenService
+                        :Create(
+                            buttonOutline,
+                            TweenInfo.new(0.2),
+                            { Color = Color3.fromRGB(0, 150, 255) }
+                        )
+                        :Play()
+                else
+                    TweenService
+                        :Create(
+                            buttonFrame,
+                            TweenInfo.new(0.2),
+                            { BackgroundColor3 = Color3.fromRGB(25, 25, 35) }
+                        )
+                        :Play()
+                    TweenService
+                        :Create(
+                            buttonOutline,
+                            TweenInfo.new(0.2),
+                            { Color = Color3.fromRGB(60, 60, 80) }
+                        )
+                        :Play()
+                end
                 if callback then
-                    callback(self.ButtonStates[toggleName])
+                    callback(buttonStates[text])
                 end
             end
         end
     end)
+    button.MouseEnter:Connect(function()
+        if not buttonStates[text] then
+            TweenService:Create(
+                buttonFrame,
+                TweenInfo.new(0.1),
+                { BackgroundColor3 = Color3.fromRGB(40, 40, 50) }
+            ):Play()
+            TweenService:Create(
+                buttonOutline,
+                TweenInfo.new(0.1),
+                { Color = Color3.fromRGB(80, 80, 120) }
+            ):Play()
+        end
+    end)
 
-    ToggleButton.MouseButton1Click:Connect(function()
-        self.ButtonStates[toggleName] = not self.ButtonStates[toggleName]
+    button.MouseLeave:Connect(function()
+        if not buttonStates[text] then
+            TweenService:Create(
+                buttonFrame,
+                TweenInfo.new(0.1),
+                { BackgroundColor3 = Color3.fromRGB(25, 25, 35) }
+            ):Play()
+            TweenService:Create(
+                buttonOutline,
+                TweenInfo.new(0.1),
+                { Color = Color3.fromRGB(60, 60, 80) }
+            ):Play()
+        end
+    end)
+    keybindButton.MouseEnter:Connect(function()
+        if not listening then
+            TweenService:Create(
+                keybindFrame,
+                TweenInfo.new(0.1),
+                { BackgroundColor3 = Color3.fromRGB(50, 50, 60) }
+            ):Play()
+        end
+    end)
 
-        local targetColor = self.ButtonStates[toggleName]
-                and Color3.new(0, 0.6, 1)
-            or Color3.new(0.1, 0.1, 0.15)
-        local targetGlow = self.ButtonStates[toggleName]
-                and Color3.new(0, 0.9, 1)
-            or Color3.new(0.2, 0.5, 0.8)
-
+    keybindButton.MouseLeave:Connect(function()
+        if not listening then
+            TweenService:Create(
+                keybindFrame,
+                TweenInfo.new(0.1),
+                { BackgroundColor3 = Color3.fromRGB(30, 30, 40) }
+            ):Play()
+        end
+    end)
+    button.MouseButton1Down:Connect(function()
         TweenService:Create(
-            ToggleButton,
-            TweenInfo.new(0.2),
-            { BackgroundColor3 = targetColor }
+            buttonFrame,
+            TweenInfo.new(0.05),
+            { BackgroundColor3 = Color3.fromRGB(60, 60, 80) }
         ):Play()
-        TweenService
-            :Create(ToggleGlow, TweenInfo.new(0.2), { Color = targetGlow })
-            :Play()
+    end)
 
+    button.MouseButton1Up:Connect(function()
+        buttonStates[text] = not buttonStates[text]
+
+        if buttonStates[text] then
+            TweenService:Create(
+                buttonFrame,
+                TweenInfo.new(0.2),
+                { BackgroundColor3 = Color3.fromRGB(0, 100, 200) }
+            ):Play()
+            TweenService:Create(
+                buttonOutline,
+                TweenInfo.new(0.2),
+                { Color = Color3.fromRGB(0, 150, 255) }
+            ):Play()
+            TweenService:Create(
+                button,
+                TweenInfo.new(0.2),
+                { TextColor3 = Color3.fromRGB(255, 255, 255) }
+            ):Play()
+        else
+            TweenService:Create(
+                buttonFrame,
+                TweenInfo.new(0.2),
+                { BackgroundColor3 = Color3.fromRGB(25, 25, 35) }
+            ):Play()
+            TweenService:Create(
+                buttonOutline,
+                TweenInfo.new(0.2),
+                { Color = Color3.fromRGB(60, 60, 80) }
+            ):Play()
+            TweenService:Create(
+                button,
+                TweenInfo.new(0.2),
+                { TextColor3 = Color3.fromRGB(255, 255, 255) }
+            ):Play()
+        end
         if callback then
-            callback(self.ButtonStates[toggleName])
+            callback(buttonStates[text])
         end
     end)
 
-    ToggleButton.MouseEnter:Connect(function()
-        if not self.ButtonStates[toggleName] then
-            TweenService:Create(
-                ToggleButton,
-                TweenInfo.new(0.15),
-                { BackgroundColor3 = Color3.new(0.15, 0.15, 0.22) }
-            ):Play()
+    return buttonContainer
+end
+
+local buttons = {}
+
+for i, btnInfo in ipairs(buttons) do
+    createButton(
+        contentContainer,
+        btnInfo.text,
+        btnInfo.pos,
+        btnInfo.size,
+        function(state) end,
+        btnInfo.key
+    )
+end
+
+local isMinimized = false
+local originalSize = mainFrame.Size
+local minimizedSize = UDim2.new(0, 220, 0, 40)
+
+local function toggleMinimize()
+    isMinimized = not isMinimized
+
+    if isMinimized then
+        for _, buttonFrame in ipairs(allButtonFrames) do
+            buttonFrame.Visible = false
         end
+        shadow.Visible = false
+        TweenService
+            :Create(
+                mainFrame,
+                TweenInfo.new(
+                    0.3,
+                    Enum.EasingStyle.Quad,
+                    Enum.EasingDirection.Out
+                ),
+                { Size = minimizedSize }
+            )
+            :Play()
+        minimizeBtn.Text = '+'
+    else
+        for _, buttonFrame in ipairs(allButtonFrames) do
+            buttonFrame.Visible = true
+        end
+
+        shadow.Visible = true
+        TweenService
+            :Create(
+                mainFrame,
+                TweenInfo.new(
+                    0.3,
+                    Enum.EasingStyle.Quad,
+                    Enum.EasingDirection.Out
+                ),
+                { Size = originalSize }
+            )
+            :Play()
+        minimizeBtn.Text = '−'
+    end
+end
+
+minimizeBtn.MouseButton1Click:Connect(toggleMinimize)
+
+local function setupControlButton(button, hoverColor)
+    button.MouseEnter:Connect(function()
+        TweenService
+            :Create(
+                button,
+                TweenInfo.new(0.1),
+                { BackgroundColor3 = hoverColor }
+            )
+            :Play()
     end)
 
-    ToggleButton.MouseLeave:Connect(function()
-        if not self.ButtonStates[toggleName] then
-            TweenService:Create(
-                ToggleButton,
-                TweenInfo.new(0.15),
-                { BackgroundColor3 = Color3.new(0.1, 0.1, 0.15) }
-            ):Play()
-        end
-    end)
-
-    KeybindButton.MouseEnter:Connect(function()
-        if not listening then
-            TweenService:Create(
-                KeybindButton,
-                TweenInfo.new(0.15),
-                { BackgroundColor3 = Color3.new(0.12, 0.12, 0.18) }
-            ):Play()
-        end
-    end)
-
-    KeybindButton.MouseLeave:Connect(function()
-        if not listening then
-            TweenService:Create(
-                KeybindButton,
-                TweenInfo.new(0.15),
-                { BackgroundColor3 = Color3.new(0.08, 0.08, 0.12) }
-            ):Play()
-        end
+    button.MouseLeave:Connect(function()
+        TweenService:Create(
+            button,
+            TweenInfo.new(0.1),
+            { BackgroundColor3 = Color3.fromRGB(40, 40, 50) }
+        ):Play()
     end)
 end
 
-ContentLayout:GetPropertyChangedSignal('AbsoluteContentSize'):Connect(function()
-    ContentScroll.CanvasSize =
-        UDim2.new(0, 0, 0, ContentLayout.AbsoluteContentSize.Y)
+setupControlButton(minimizeBtn, Color3.fromRGB(80, 80, 120))
+setupControlButton(closeBtn, Color3.fromRGB(220, 60, 60))
+
+closeBtn.MouseButton1Click:Connect(function()
+    TweenService
+        :Create(mainFrame, TweenInfo.new(0.2), { BackgroundTransparency = 1 })
+        :Play()
+    TweenService:Create(shadow, TweenInfo.new(0.2), { ImageTransparency = 1 })
+        :Play()
+    wait(0.2)
+    screenGui:Destroy()
 end)
 
-TabListLayout:GetPropertyChangedSignal('AbsoluteContentSize'):Connect(function()
-    TabContainer.CanvasSize =
-        UDim2.new(0, 0, 0, TabListLayout.AbsoluteContentSize.Y)
+if UserInputService.TouchEnabled then
+    mainFrame.Size = UDim2.new(0, 250, 0, 320)
+    originalSize = mainFrame.Size
+    minimizedSize = UDim2.new(0, 250, 0, 40)
+
+    for _, buttonFrame in ipairs(allButtonFrames) do
+        local textButton = buttonFrame:FindFirstChildOfClass('TextButton')
+        if textButton and textButton.TextSize then
+            textButton.TextSize = textButton.TextSize + 2
+        end
+    end
+end
+
+local menuVisible = false
+
+local function toggleMenu()
+    menuVisible = not menuVisible
+
+    if menuVisible then
+        mainFrame.Visible = true
+        shadow.Visible = true
+
+        header.Visible = true
+        title.Visible = true
+        subtitle.Visible = true
+        controls.Visible = true
+        minimizeBtn.Visible = true
+        closeBtn.Visible = true
+
+        contentContainer.Visible = true
+
+        for _, buttonFrame in ipairs(allButtonFrames) do
+            buttonFrame.Visible = true
+        end
+
+        TweenService:Create(mainFrame, TweenInfo.new(0.3), {
+            Position = UDim2.new(0.9, -200, 0, 150),
+            Size = originalSize,
+        }):Play()
+        TweenService:Create(shadow, TweenInfo.new(0.3), {
+            ImageTransparency = 0.8,
+        }):Play()
+        TweenService:Create(toggleCircle, TweenInfo.new(0.3), {
+            BackgroundColor3 = Color3.fromRGB(0, 100, 200),
+        }):Play()
+    else
+        TweenService:Create(mainFrame, TweenInfo.new(0.3), {
+            Position = UDim2.new(0.9, -100, 0, 150),
+            Size = UDim2.new(0, 0, 0, 0),
+        }):Play()
+        TweenService:Create(shadow, TweenInfo.new(0.3), {
+            ImageTransparency = 1,
+        }):Play()
+        TweenService:Create(toggleCircle, TweenInfo.new(0.3), {
+            BackgroundColor3 = Color3.fromRGB(0, 150, 255),
+        }):Play()
+
+        wait(0.3)
+
+        mainFrame.Visible = false
+        shadow.Visible = false
+        header.Visible = false
+        title.Visible = false
+        subtitle.Visible = false
+        controls.Visible = false
+        minimizeBtn.Visible = false
+        closeBtn.Visible = false
+        contentContainer.Visible = false
+
+        for _, buttonFrame in ipairs(allButtonFrames) do
+            buttonFrame.Visible = false
+        end
+    end
+end
+
+toggleCircle.MouseButton1Click:Connect(toggleMenu)
+
+toggleCircle.MouseEnter:Connect(function()
+    TweenService:Create(toggleCircle, TweenInfo.new(0.2), {
+        BackgroundColor3 = Color3.fromRGB(0, 170, 255),
+        Size = UDim2.new(0, 55, 0, 55),
+    }):Play()
 end)
 
-loadKeybinds()
+toggleCircle.MouseLeave:Connect(function()
+    TweenService:Create(toggleCircle, TweenInfo.new(0.2), {
+        BackgroundColor3 = menuVisible and Color3.fromRGB(0, 100, 200)
+            or Color3.fromRGB(0, 150, 255),
+        Size = UDim2.new(0, 50, 0, 50),
+    }):Play()
+end)
 
-return NamelessGui
+local toggleDragging = false
+local toggleDragInput, toggleDragStart, toggleStartPos
+
+local function updateToggle(input)
+    local delta = input.Position - toggleDragStart
+    toggleCircle.Position = UDim2.new(
+        toggleStartPos.X.Scale,
+        toggleStartPos.X.Offset + delta.X,
+        toggleStartPos.Y.Scale,
+        toggleStartPos.Y.Offset + delta.Y
+    )
+end
+
+toggleCircle.InputBegan:Connect(function(input)
+    if
+        input.UserInputType == Enum.UserInputType.MouseButton1
+        or input.UserInputType == Enum.UserInputType.Touch
+    then
+        toggleDragging = true
+        toggleDragStart = input.Position
+        toggleStartPos = toggleCircle.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                toggleDragging = false
+            end
+        end)
+    end
+end)
+
+toggleCircle.InputChanged:Connect(function(input)
+    if
+        input.UserInputType == Enum.UserInputType.MouseMovement
+        or input.UserInputType == Enum.UserInputType.Touch
+    then
+        toggleDragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == toggleDragInput and toggleDragging then
+        updateToggle(input)
+    end
+end)
