@@ -2,27 +2,37 @@ local output = ""
 local captured = {}
 local seen_tables = {}
 
+-- Safe file writing that checks for available functions
 local function write(file, data)
     if writefile then
-        writefile(file, data)
-        return true
+        return pcall(writefile, file, data)
+    elseif syn and syn.writefile then
+        return pcall(syn.writefile, file, data)
+    else
+        -- No file writing available, just print to console
+        print("[!] No writefile function available")
+        print("[!] Dump contents:")
+        print(data)
+        return false
     end
-    return false
 end
 
+-- Safe clipboard that checks for available functions
 local function clip(text)
     if setclipboard then
-        setclipboard(text)
-        return true
+        return pcall(setclipboard, text)
+    elseif syn and syn.write_clipboard then
+        return pcall(syn.write_clipboard, text)
     elseif toclipboard then
-        toclipboard(text)
-        return true
+        return pcall(toclipboard, text)
+    else
+        print("[!] No clipboard function available")
+        return false
     end
-    return false
 end
 
 local og_unpack = unpack or table.unpack
-local og_load = loadstring
+local og_load = loadstring or load
 
 -- Simple safe table access
 local function safe_get(t, k)
@@ -54,7 +64,7 @@ local function fmt(tbl, indent, depth)
     local count = 0
     
     -- Process numeric indices first (limited)
-    for i = 1, math.min(20, 100) do
+    for i = 1, 100 do
         if count >= 30 then break end
         local value = safe_get(tbl, i)
         if value == nil then break end
@@ -171,11 +181,18 @@ Tables: %d
 %s
 ]], os.date("%Y-%m-%d %H:%M:%S"), #captured, display_output)
     
-    if write(file, result) then
+    local write_success = write(file, result)
+    if write_success then
         print("[+] Saved:", file)
+    else
+        print("[-] Could not save to file, printing to console instead")
     end
-    if clip(result) then
+    
+    local clip_success = clip(result)
+    if clip_success then
         print("[+] Copied to clipboard")
+    else
+        print("[-] Could not copy to clipboard")
     end
 end
 
