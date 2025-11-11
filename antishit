@@ -1,0 +1,265 @@
+local output = ""
+local captured = {}
+local seen_tables = {}
+local bypass_mode = true
+
+-- Enhanced write/clip functions remain the same
+local function write(file, data)
+    if writefile then
+        writefile(file, data)
+        return true
+    end
+    warn("no write function available")
+    return false
+end
+
+local function clip(text)
+    if setclipboard then
+        setclipboard(text)
+        return true
+    elseif toclipboard then
+        toclipboard(text)
+        return true
+    end
+    return false
+end
+
+local og_unpack = unpack or table.unpack
+local og_load = loadstring
+local og_pairs = pairs
+local og_ipairs = ipairs
+
+-- Anti-hook detection bypass
+local function get_raw_table(t)
+    if bypass_mode then
+        -- Try to access table without triggering metamethods
+        local raw = {}
+        local success = pcall(function()
+            for i = 1, math.min(#t, 1000) do
+                raw[i] = rawget(t, i)
+            end
+        end)
+        return raw
+    end
+    return t
+end
+
+-- Safe table formatter with anti-anti-dump features
+local function fmt(tbl, indent, depth, path)
+    indent = indent or 0
+    depth = depth or 0
+    path = path or ""
+    
+    -- Anti-recursion protection
+    if depth > 15 then
+        return "[depth_limit]"
+    end
+    if seen_tables[tbl] then
+        return "[seen]"
+    end
+    seen_tables[tbl] = true
+    
+    local spacing = string.rep("  ", indent)
+    local result = "{"
+    local count = 0
+    
+    -- Use different iteration methods to bypass protections
+    local function safe_iterate()
+        local items = {}
+        
+        -- Try numeric indices first (arrays)
+        pcall(function()
+            for i = 1, math.min(100, #tbl) do
+                if count >= 50 then return end
+                local success, value = pcall(function() return tbl[i] end)
+                if success then
+                    items[#items + 1] = {index = i, value = value, type = type(value)}
+                    count = count + 1
+                end
+            end
+        end)
+        
+        -- Try pairs with protection
+        pcall(function()
+            for k, v in og_pairs(tbl) do
+                if count >= 100 then break end
+                if type(k) ~= "table" then -- Avoid table keys that cause recursion
+                    items[#items + 1] = {index = k, value = v, type = type(v)}
+                    count = count + 1
+                end
+            end
+        end)
+        
+        return items
+    end
+    
+    local items = safe_iterate()
+    
+    for _, item in ipairs(items) do
+        local index_str
+        if type(item.index) == "string" then
+            index_str = string.format("%q", item.index)
+        else
+            index_str = tostring(item.index)
+        end
+        
+        local value_str
+        if item.type == "table" then
+            local new_path = path .. "[" .. tostring(item.index) .. "]"
+            value_str = fmt(item.value, indent + 1, depth + 1, new_path)
+        elseif item.type == "string" then
+            -- Truncate very long strings
+            if #item.value > 500 then
+                value_str = string.format("%q", item.value:sub(1, 500) .. "...[truncated]")
+            else
+                value_str = string.format("%q", item.value)
+            end
+        else
+            value_str = tostring(item.value)
+        end
+        
+        result = result .. string.format("\n%s[%s] = %s,", spacing .. "  ", index_str, value_str)
+    end
+    
+    if count >= 100 then
+        result = result .. "\n" .. spacing .. "  -- ... (truncated)"
+    end
+    
+    result = result .. "\n" .. spacing .. "}"
+    seen_tables[tbl] = nil -- Clean up for next table
+    return result
+end
+
+-- Hook unpack with enhanced protection
+function unpack(...)
+    local args = {...}
+    local t = args[1]
+    
+    if type(t) == "table" then
+        print("[*] Capturing table...")
+        
+        -- Reset seen tables
+        seen_tables = {}
+        
+        local success, formatted = pcall(function()
+            return fmt(t)
+        end)
+        
+        if success then
+            output = output .. "\n-- Table Capture --\n" .. formatted .. "\n\n"
+            table.insert(captured, t)
+            print("[*] Successfully captured table")
+        else
+            output = output .. "\n-- Failed to capture table: " .. tostring(formatted) .. " --\n\n"
+            print("[!] Table capture failed:", formatted)
+        end
+    end
+    
+    return og_unpack(...)
+end
+
+-- Enhanced loadstring hook for better detection
+loadstring = function(code, ...)
+    if type(code) == "string" then
+        -- Detect various Moonsec versions
+        if code:find("return function") and code:find("local d=") then
+            print("[*] Moonsec V3 detected - activating bypass mode")
+            bypass_mode = true
+        elseif code:find("getfenv") and code:find("loadstring") then
+            print("[*] Possible Moonsec V2/V4 detected")
+            bypass_mode = true
+        end
+        
+        -- Look for anti-dump patterns
+        if code:find("debug%)") or code:find("getmetatable%)") or code:find("setmetatable%)") then
+            print("[*] Anti-dump measures detected in code")
+        end
+    end
+    
+    return og_load(code, ...)
+end
+
+-- Additional hook for table access
+local og_index = nil
+local function safe_table_access(t, k)
+    if bypass_mode and type(t) == "table" then
+        local mt = getmetatable(t)
+        if mt and rawget(mt, "__index") then
+            -- Bypass metamethods by using rawget
+            return rawget(t, k)
+        end
+    end
+    return t[k]
+end
+
+-- Hook table library functions
+local og_table_foreach = table.foreach
+if og_table_foreach then
+    table.foreach = function(t, f)
+        if bypass_mode then
+            print("[*] table.foreach intercepted")
+        end
+        return og_table_foreach(t, f)
+    end
+end
+
+local function save()
+    local file = "dump_" .. os.time() .. ".txt"
+    local result = string.format([[
+========================================
+ENHANCED RAT'S DUMP RESULTS
+========================================
+Capture Time: %s
+Tables Captured: %d
+Bypass Mode: %s
+
+%s
+========================================
+]], os.date("%Y-%m-%d %H:%M:%S"), #captured, tostring(bypass_mode), output)
+    
+    if write(file, result) then
+        print("[+] Saved:", file)
+    end
+    if clip(result) then
+        print("[+] Copied to clipboard")
+    end
+    print("[+] Complete, tables captured:", #captured)
+end
+
+-- Multiple trigger options
+if game then
+    -- Option 1: Player parent change
+    game:GetService("Players").LocalPlayer:GetPropertyChangedSignal("Parent"):Connect(save)
+    
+    -- Option 2: Time-based auto-save
+    task.spawn(function()
+        while task.wait(10) do
+            if #captured > 0 then
+                save()
+                break
+            end
+        end
+    end)
+    
+    -- Option 3: Manual trigger via key press (optional)
+    local UIS = game:GetService("UserInputService")
+    UIS.InputBegan:Connect(function(input)
+        if input.KeyCode == Enum.KeyCode.F5 then
+            print("[*] Manual dump triggered")
+            save()
+        end
+    end)
+end
+
+print("[*] Enhanced dumper ready with anti-anti-dump measures")
+print("[*] Execute obfuscated script now")
+
+-- Auto-save fallback
+task.spawn(function()
+    task.wait(8)
+    if #captured > 0 then
+        save()
+    else
+        print("[!] No tables captured within timeout period")
+    end
+end)
