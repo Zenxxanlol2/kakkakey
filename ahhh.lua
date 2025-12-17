@@ -10,10 +10,6 @@ function Syllinse:Load()
     local TweenService = game:GetService('TweenService')
     local Lighting = game:GetService('Lighting')
 
-    local Net = ReplicatedStorage:WaitForChild('Packages'):WaitForChild('Net')
-    local Remote = Net:WaitForChild('RE/UseItem')
-
-
     local player = Players.LocalPlayer
 
     local screenGui = Instance.new('ScreenGui')
